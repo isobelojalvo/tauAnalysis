@@ -14,11 +14,24 @@
 #ifndef HELPERS_W9QK6HND
 #define HELPERS_W9QK6HND
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 //MINIAOD
+void findDaughters(const reco::GenParticle* mother, std::vector<const reco::GenParticle*>& daughters);
+//void findPackedDaughters(const pat::PackedGenParticle* mother, std::vector<const pat::PackedGenParticle*>& daughters);
+void listDaughters(std::vector<const reco::GenParticle*>& daughters);
+void eraseHadronCands(std::vector<const pat::PackedCandidate*>& hadronCands, reco::CandidatePtrVector signalCands);
+const pat::PackedCandidate* findThirdHadron(std::vector<const pat::PackedCandidate*> hadronCands, reco::CandidatePtrVector signalCands, std::vector<const reco::GenParticle*> daughters, Int_t *recoTrack, const reco::GenParticle* *genTrack3, Float_t *trackDR);
+void GetDaughterDecayMode(const reco::Candidate* particle, std::vector<int> &counts);
+int GetDecayMode(std::vector<const reco::GenParticle*>& daughters);
+//int GetPackedDecayMode(std::vector<const pat::PackedGenParticle*>& daughters);
 std::vector<const reco::GenParticle*> getGenParticleCollectionMiniAOD(const edm::Event& evt);
 std::vector<const reco::GenParticle*> getGenEleCollectionMiniAOD(const edm::Event& evt);
 std::vector<const reco::GenParticle*> getGenMuCollectionMiniAOD(const edm::Event& evt);
 bool genMatchingMiniAOD(const pat::Tau tau, std::vector<const reco::GenParticle*>& GenPart, double maxDR);
+bool isHadronic(const reco::GenParticle* tau);
+reco::Candidate::LorentzVector GetVisibleP4(std::vector<const reco::GenParticle*>& daughters);
+//reco::Candidate::LorentzVector GetPackedVisibleP4(std::vector<const pat::PackedGenParticle*>& daughters);
+bool isNeutrino(const reco::Candidate* daughter);
 //AODSIM
 reco::PFJetRef getJetRef(const reco::PFTau& tau);
 std::vector<const reco::GenParticle*> getGenParticleCollection(const edm::Event& evt);	

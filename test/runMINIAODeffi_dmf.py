@@ -1,62 +1,64 @@
 import FWCore.ParameterSet.Config as cms
-import os
-
-
 from FWCore.ParameterSet.VarParsing import VarParsing
 
-options = VarParsing ('analysis')
-with open('files_WJetsToLNu.txt') as f:
-    options.inputFiles = f.readlines()
-
 #input cmsRun options
-options.outputFile = "MiniAOD_FR_WJets.root"
+options = VarParsing ('analysis')
+#with open('files_SUSYggH.txt') as f:
+#    options.inputFiles = f.readlines()
+
+options.outputFile = "MiniAODeffi_dmf_SUSYggH.root"
 options.parseArguments()
 
 #name the process
 process = cms.Process("TreeProducerFromMiniAOD")
-
-#Make the framework shutup
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000;
+process.MessageLogger.cerr.FwkReport.reportEvery = 5000;
 process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-from Configuration.AlCa.GlobalTag import GlobalTag
 
 #50 ns global tag for MC replace with 'GR_P_V56' for prompt reco. https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions#Prompt_reconstruction_Global_Tag 
+from Configuration.AlCa.GlobalTag import GlobalTag
+#Make sure Global Tag mathes input file type
+#process.GlobalTag = GlobalTag(process.GlobalTag, '76X_mcRun2_asymptotic_RunIIFall15DR76_v1', '')
 process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_v6', '')
 
 #how many events to run over
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000)
+    input = cms.untracked.int32(-1)
 )
-#input files
+
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(options.inputFiles),
+    fileNames = cms.untracked.vstring(options.inputFiles)
 )
+
 
 ##################################################
 # Main
-process.byLooseCombinedIsolationDeltaBetaCorr3Hits = cms.EDAnalyzer("MiniAODfakeRate_alt",
+process.byLooseCombinedIsolationDeltaBetaCorr3Hits = cms.EDAnalyzer("MiniAODeffi_dmf",
     vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
-    taus = cms.InputTag("slimmedTaus"),
-    jets = cms.InputTag("slimmedJets"),
-    tauID = cms.string("byLooseCombinedIsolationDeltaBetaCorr3Hits"),
+    taus = cms.InputTag("slimmedTaus"),    
+    tauID = cms.string("byLooseCombinedIsolationDeltaBetaCorr3Hits"), 
     packed = cms.InputTag("packedGenParticles"),
-    pruned = cms.InputTag("prunedGenParticles")                                           
+    pruned = cms.InputTag("prunedGenParticles")
 )
-process.byMediumCombinedIsolationDeltaBetaCorr3Hits = cms.EDAnalyzer("MiniAODfakeRate_alt",
+process.byMediumCombinedIsolationDeltaBetaCorr3Hits = cms.EDAnalyzer("MiniAODeffi_dmf",
     vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
     taus = cms.InputTag("slimmedTaus"),
-    jets = cms.InputTag("slimmedJets"),
     tauID = cms.string("byMediumCombinedIsolationDeltaBetaCorr3Hits"),
     packed = cms.InputTag("packedGenParticles"),
     pruned = cms.InputTag("prunedGenParticles")
 )
-process.byTightCombinedIsolationDeltaBetaCorr3Hits = cms.EDAnalyzer("MiniAODfakeRate_alt",
+process.byTightCombinedIsolationDeltaBetaCorr3Hits = cms.EDAnalyzer("MiniAODeffi_dmf",
     vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
     taus = cms.InputTag("slimmedTaus"),
-    jets = cms.InputTag("slimmedJets"),
     tauID = cms.string("byTightCombinedIsolationDeltaBetaCorr3Hits"),
+    packed = cms.InputTag("packedGenParticles"),
+    pruned = cms.InputTag("prunedGenParticles")
+)
+process.byNone = cms.EDAnalyzer("MiniAODeffi_dmf",
+    vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
+    taus = cms.InputTag("slimmedTaus"),
+    tauID = cms.string("decayModeFindingNewDMs"),#this tauID is always used; so it has no additional effect
     packed = cms.InputTag("packedGenParticles"),
     pruned = cms.InputTag("prunedGenParticles")
 )
@@ -67,15 +69,10 @@ process.byTightCombinedIsolationDeltaBetaCorr3Hits = cms.EDAnalyzer("MiniAODfake
 process.p = cms.Path(
                      process.byLooseCombinedIsolationDeltaBetaCorr3Hits*
 		     process.byMediumCombinedIsolationDeltaBetaCorr3Hits*
-		     process.byTightCombinedIsolationDeltaBetaCorr3Hits
+		     process.byTightCombinedIsolationDeltaBetaCorr3Hits*
+             process.byNone
                      )
 
-#output file
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string(options.outputFile)
+        fileName = cms.string(options.outputFile)
 )
-
-#print out all processes used when running- useful check to see if module ran
-#UNCOMMENT BELOW
-#dump_file = open('dump.py','w')
-#dump_file.write(process.dumpPython())

@@ -270,7 +270,7 @@ twoProngStudy::analyze(const edm::Event& evt, const edm::EventSetup& iSetup)
 	    nTracks02  = 0;
 	    nTracks03  = 0;
 	    //for(const reco::Track &track : *tracks){
-	    for(int t = 0; t < tracks->size(); t++){
+	    for(int t = 0; (unsigned)t < tracks->size(); t++){
 	      reco::TrackRef trackRef(tracks,t);
 	      double deltaR = reco::deltaR(*tauCandidate,tracks->at(t));
 	      if(deltaR<0.05)
@@ -291,7 +291,7 @@ twoProngStudy::analyze(const edm::Event& evt, const edm::EventSetup& iSetup)
 	    std::vector<reco::TrackRef> tracks005NM;
 	    std::vector<reco::TrackRef> tracks01NM;
 	    std::vector<reco::TrackRef> tracks02NM;
-	    for(int t = 0; t < tracks->size(); t++){
+	    for(int t = 0; (unsigned)t < tracks->size(); t++){
 	      reco::TrackRef trackRef(tracks,t);
 	      double deltaR = reco::deltaR(*tauCandidate,tracks->at(t));
 	      bool match = checkIfTrackMatchesPF(tauCandidate,trackRef);
