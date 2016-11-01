@@ -1,9 +1,9 @@
-This package can be installed in a recent CMSSW area e.g. CMSSW_7_4_5. inside RecoTagTools 
+This package can be installed in a recent CMSSW area e.g. CMSSW_8_0_20. inside RecoTagTools 
 
 Example installation:
 ```
-cmsrel CMSSW_8_0_10
-cd CMSSW_8_0_10/src
+cmsrel CMSSW_8_0_20
+cd CMSSW_8_0_20/src
 cmsenv
 git cms-init
 git cms-addpkg RecoTauTag/RecoTau
