@@ -7,7 +7,7 @@ cd CMSSW_8_0_10/src
 cmsenv
 git cms-init
 git cms-addpkg RecoTauTag/RecoTau
-git clone https://github.com/lmdodd/tauAnalysis.git RecoTauTag/tauAnalysis
+git clone https://github.com/isobelojalvo/tauAnalysis.git RecoTauTag/tauAnalysis
 scram b -j8
 ```
 
